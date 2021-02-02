@@ -108,6 +108,27 @@ class Public_model extends CI_Model
         return $this->db->insert_id();
     }
 
+    public function getOrder($order_id)
+    {
+        $this->db->select('order.*,user.*,country.name as country_name');
+        $this->db->from('order');
+        $this->db->join('user', 'user.id = order.customer_id', 'left');
+        $this->db->join('country', 'country.id = user.country_id', 'left');
+        $this->db->where('order.id', $order_id);
+        $order_data = $this->db->get()->row_array();
+
+        $this->db->select('order_product.*,season.name as season_name');
+        $this->db->from('order_product');
+        $this->db->join('product', 'product.id = order_product.product_id', 'left');
+        $this->db->join('season', 'product.season_link = season.link', 'left');
+        $this->db->where('order_product.order_id', $order_id);
+
+        $product_data = $this->db->get()->row_array();
+        $order_data["product_data"] = $product_data;
+        return $order_data;
+    }
+
+
     //// 
     public function productsCount($big_get)
     {

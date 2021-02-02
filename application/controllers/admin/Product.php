@@ -1,13 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: DREAM
- * Date: 12/17/2020
- * Time: 2:30 PM
- */
-?>
-
-<?php
 
 class Product extends CI_Controller{
 
@@ -20,7 +11,6 @@ class Product extends CI_Controller{
     $user = $this->session->userdata('logged_data'); // role_id = 1
     if( !isset($user) || $user["role_id"] != '1')
       redirect( base_url().'user/login');
-    
   }
 
   public function index()
@@ -30,71 +20,83 @@ class Product extends CI_Controller{
     $this->load->view('admin/product/list');
     $this->load->view('admin/common/footer');
     $this->load->view('admin/common/footer_html');
-
   }
 
   public function create()
   {
     // POST request
     if (isset($_POST['category_id']) && !empty($_POST['category_id'])) {
-
-      $sport_link = $this->Admin_model->getSports($_POST['category_id'])[0]["link"];
-      $table_name = $sport_link . "_statistics";
-      $season_link = $_POST['season_id'];
-
-      //$this->db->from($table_name);
-      $this->db->select($table_name.'.*, match.*');
-      $this->db->join($table_name, $table_name.'.match_id = match.id', 'left');
-      $this->db->like('match.season_link',$season_link);
-      $matchs = $this->db->get('match');
-
-      $field_array = $this->db->query("select * from ".$table_name)->list_fields();
-      $data = '<table class="table table-striped- table-bordered table-hover table-checkable dataTable" style = ""> <thead> <tr>';
-
-      $field_array_mand = array_diff($field_array, array('id' , 'match_id'));
-      foreach($field_array_mand as $field){
-           $data .= '<th>'.$field . "</th>";
-      }
-      $data .= "</tr> </thead> <tbody>";
-
-      $count = 0;
-      $match_result = $matchs->result();
-      if(count($match_result) < 1)
-      {
-        $this->session->set_flashdata('alert_message', 'Failed!. No data exist.');
-      }
-      else {
-        // Csv file creating
-        $filename = "assets/products/product".(new DateTime())->format('YmdHisv').".csv";
-        $fp = fopen($filename, 'w');
-        fputcsv($fp, $field_array_mand);
-        foreach($match_result as $rows)
-        { 
-          $data .= "<tr>";
-          $line = array();
-          foreach($field_array_mand as $field){
-              if($count < 3 )
-                $data .= '<td>'.$rows->$field . "</td>";
-              $line[] = $rows->$field;
-          }
-
-          fputcsv($fp, $line);
-
-          $data .= "</tr>";
-          $count+=1;
-          
-        }
-        $data .= " </tbody></table>";
-
-        $_POST['sample_view'] = $data;
-        $_POST['file_path'] = $filename;
-
-
-        $this->Admin_model->createProduct($_POST);
-        $this->session->set_flashdata('alert_message', 'Created a product successfully!');
-        redirect("admin/product/index");
-      }
       
+      if(isset($_POST['season_id']) && !empty($_POST['season_id']))
+      {
+        if($_POST["season_id"] == '0'){
+            if( isset($_POST['league_id']) && !empty($_POST['league_id']) ){
+
+              if( $_POST["league_id"] == "0" ) {
+                  // All leagues - All seasons
+                  $leagues = $this->Admin_model->getLeagues($_POST['category_id']);
+                  foreach($leagues as $league){
+                    $_POST["league_id"] = $league["id"];
+                    $seasons = $this->Admin_model->getSeasons("", $league["id"]);
+                    foreach($seasons as $season){
+                      $_POST["season_id"] = $season["link"];
+                      $_POST["country_id1"] = $this->getCountryIDFromSeason( $season["link"]);
+                      $_POST["season_from"] = $this->getFromSeason( $season["link"]);
+                      $_POST["season_to"] = $this->getToSeason( $season["link"]);
+                      $this->createProductOne( $_POST );
+                    }
+                  }
+              } else {
+                  // Selected league - all seasons
+                  $seasons = $this->Admin_model->getSeasons("", $_POST["league_id"]);
+                  foreach($seasons as $season){
+                    $_POST["season_id"] = $season["link"];
+                    $_POST["country_id1"] = $this->getCountryIDFromSeason( $season["link"]);
+                    $_POST["season_from"] = $this->getFromSeason( $season["link"]);
+                    $_POST["season_to"] = $this->getToSeason( $season["link"]);
+                    $this->createProductOne( $_POST );
+                  }
+              }
+            } else {
+                // exeption 
+            }
+        } else {
+            // Selected season
+            $this->createProductOne( $_POST );
+        }
+
+      } else {
+        if( isset($_POST['league_id']) && !empty($_POST['league_id']) ){
+          if( $_POST["league_id"] == "0" ) {
+              // All leagues - All seasons
+              $leagues = $this->Admin_model->getLeagues($_POST['category_id']);
+              foreach($leagues as $league){
+                $_POST["league_id"] = $league["id"];
+                $seasons = $this->Admin_model->getSeasons("", $league["id"]);
+                foreach($seasons as $season){
+                  $_POST["season_id"] = $season["link"];
+                  $_POST["country_id1"] = $this->getCountryIDFromSeason( $season["link"]);
+                  $_POST["season_from"] = $this->getFromSeason( $season["link"]);
+                  $_POST["season_to"] = $this->getToSeason( $season["link"]);
+                  $this->createProductOne( $_POST );
+                }
+              }
+          } else {
+              // Selected league - all seasons
+              $seasons = $this->Admin_model->getSeasons("", $_POST["league_id"]);
+              foreach($seasons as $season){
+                $_POST["season_id"] = $season["link"];
+                $_POST["country_id1"] = $this->getCountryIDFromSeason( $season["link"]);
+                $_POST["season_from"] = $this->getFromSeason( $season["link"]);
+                $_POST["season_to"] = $this->getToSeason( $season["link"]);
+                $this->createProductOne( $_POST );
+              }
+          }
+        } else {
+            // exeption 
+        }
+      }
+      redirect("admin/product/index");
     } 
 
     // Get request
@@ -113,7 +115,109 @@ class Product extends CI_Controller{
     $this->load->view('admin/product/create', $data);
     $this->load->view('admin/common/footer');
     $this->load->view('admin/common/footer_html');
+  }
 
+  function getCountryIDFromSeason($season_name){
+    $pieces = explode("/", $season_name);
+    if(is_array($pieces) && count($pieces) > 3 ) {
+      $country_name = $pieces[2];
+      $query = $this->db->select("*")->where('link' , $country_name)->get("country");
+      $result = $query->row();
+      if(isset($result)) return $result->id;
+    } 
+    return "";
+  }
+
+  function getFromSeason($season_name){
+    $year = false;
+    $season_from = "";
+    $season_to = "";
+    if(preg_match_all("/\d{4}/", $season_name, $match)) {
+      $year = $match[0];
+      if(count($year) > 1)
+      {
+        $season_from = $year[0];
+        $season_to = $year[1];
+      }
+      else if( count($year) == 1) {
+        $season_from = $year[0];
+      }
+    }
+    return $season_from;
+  }
+
+  function getToSeason($season_name){
+    $year = false;
+    $season_from = "";
+    $season_to = "";
+    if(preg_match_all("/\d{4}/", $season_name, $match)) {
+      $year = $match[0];
+      if(count($year) > 1)
+      {
+        $season_from = $year[0];
+        $season_to = $year[1];
+      }
+      else if( count($year) == 1) {
+        $season_from = $year[0];
+      }
+    }
+    return $season_to;
+  }
+
+  function createProductOne($post)
+  {
+    $sport_link = $this->Admin_model->getSports($post['category_id'])[0]["link"];
+    $table_name = $sport_link . "_statistics";
+    $season_link = $post['season_id'];
+    //$this->db->from($table_name);
+    $this->db->select($table_name.'.*, match.*');
+    $this->db->join($table_name, $table_name.'.match_id = match.id', 'left');
+    $this->db->like('match.season_link',$season_link);
+    $matchs = $this->db->get('match');
+
+    $field_array = $this->db->query("select * from ".$table_name)->list_fields();
+    $data = '<table class="table table-striped- table-bordered table-hover table-checkable dataTable" style = ""> <thead> <tr>';
+
+    $field_array_mand = array_diff($field_array, array('id' , 'match_id'));
+    foreach($field_array_mand as $field){
+         $data .= '<th>'.$field . "</th>";
+    }
+    $data .= "</tr> </thead> <tbody>";
+
+    $count = 0;
+    $match_result = $matchs->result();
+    if(count($match_result) < 1)
+    {
+      $this->session->set_flashdata('alert_message', 'Failed!. No data exist.');
+    }
+    else {
+      // Csv file creating
+      $filename = "assets/products/product".(new DateTime())->format('YmdHisv').".csv";
+      $fp = fopen($filename, 'w');
+      fputcsv($fp, $field_array_mand);
+      foreach($match_result as $rows)
+      { 
+        $data .= "<tr>";
+        $line = array();
+        foreach($field_array_mand as $field){
+            if($count < 3 )
+              $data .= '<td>'.$rows->$field . "</td>";
+            $line[] = $rows->$field;
+        }
+
+        fputcsv($fp, $line);
+
+        $data .= "</tr>";
+        $count+=1;
+      }
+      $data .= " </tbody></table>";
+
+      $post['sample_view'] = $data;
+      $post['file_path'] = $filename;
+
+      $this->Admin_model->createProduct($post);
+      $this->session->set_flashdata('alert_message', 'Created a product successfully!');
+    }
   }
 
   public function edit($id = 0)
@@ -172,12 +276,10 @@ class Product extends CI_Controller{
         $_POST['sample_view'] = $data;
         $_POST['file_path'] = $filename;
 
-
         $this->Admin_model->updateProduct($_POST);
         $this->session->set_flashdata('alert_message', 'Updated a product successfully!');
         redirect("admin/product/index");
       }
-      
     } 
 
     // Get request
@@ -196,9 +298,78 @@ class Product extends CI_Controller{
     $this->load->view('admin/product/edit', $data);
     $this->load->view('admin/common/footer');
     $this->load->view('admin/common/footer_html');
-
   }
 
+  public function bulkUpdate(){
+    $last_update = $this->Admin_model->getLastUpdate();
+    $this->db->from("product");
+    $this->db->where('season_from',0)->or_where("season_from", date("Y") )->or_where("season_to",date("Y"));
+    $products = $this->db->get();
+    foreach($products->result() as $product)
+    {  
+      $sport_link = $this->Admin_model->getSports($product->category_id)[0]["link"];
+      $table_name = $sport_link . "_statistics";
+      $season_link = $product->season_link;
+
+      $this->db->from('match');
+      $this->db->select($table_name.'.*, match.*');
+      $this->db->join($table_name, $table_name.'.match_id = match.id', 'left');
+      $this->db->like('match.season_link',$season_link);
+      $matchs = $this->db->get();
+
+      $field_array = $this->db->query("select * from ".$table_name)->list_fields();
+      $data = '<table class="table table-striped- table-bordered table-hover table-checkable dataTable" style = ""> <thead> <tr>';
+
+      $field_array_mand = array_diff($field_array, array('id' , 'match_id'));
+      foreach($field_array_mand as $field){
+           $data .= '<th>'.$field . "</th>";
+      }
+      $data .= "</tr> </thead> <tbody>";
+
+      $count = 0;
+      $match_result = $matchs->result();
+      if(count($match_result) < 1)
+      {
+        $this->session->set_flashdata('alert_message', 'Failed!. No data exist.');
+      }
+      else {
+        // Csv file creating
+        $filename = "assets/products/product".(new DateTime())->format('YmdHisv').".csv";
+        $fp = fopen($filename, 'w');
+        fputcsv($fp, $field_array_mand);
+        foreach($match_result as $rows)
+        { 
+          $data .= "<tr>";
+          $line = array();
+          foreach($field_array_mand as $field){
+              if($count < 3 )
+                $data .= '<td>'.$rows->$field . "</td>";
+              $line[] = $rows->$field;
+          }
+
+          fputcsv($fp, $line);
+
+          $data .= "</tr>";
+          $count+=1;
+          
+        }
+        $data .= " </tbody></table>"; 
+
+        if (!$this->db->update('product',array(
+          'file_path' => $filename,
+          'sample_view' => html_entity_decode($data,ENT_QUOTES),
+          'last_update' => $last_update,
+          'updated_at' => date('Y-m-d H:i:s')
+        ), 'id = '.$product->id )) {
+                return -1;        
+          }
+
+        $this->session->set_flashdata('alert_message', 'Updated a product successfully!');
+      }
+    }
+
+    redirect("admin/product/index");
+  }
 
   public function ajaxLeagueList()
   {

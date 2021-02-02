@@ -129,22 +129,22 @@ var LEAGUETABLE = function() {
                 title: `TOURID`,
 
             }, 
-            /*
+            
             {
-                field: '',
+                field: 'action',
                 title: 'ACTION',
                 sortable: false,
                 width: 110,
                 autoHide: false,
-                template: function() {
-                    return `
+                // template: function(data) {
+                //     return `
                       
-                        <a href="#" class = "dayHead editTable kt-menu__link"><i class="la la-edit la-2x"></i>  </a>
+                //         <a href= "javascript:void(0);" onclick="javascript:editLeague();return false;" class = "dayHead editTable kt-menu__link"><i class="la la-edit la-2x"></i>  </a>
                       
-                      `;
-                },
+                //       `;
+                // },
             }
-            */
+            
         ],
         });
 
@@ -182,7 +182,40 @@ var LEAGUETABLE = function() {
                 console.log(form);
                 form[0].submit(); // submit the form
             }
-        });  
+        }); 
+        
+        $( "#formEditLeague" ).validate({
+            // define validation rules
+            rules: {
+                league_id: {
+                    required: true
+                },
+                sport_id: {
+                    required: true
+                },
+                tourID: {
+                    required: true
+                },
+                league_name: {
+                    required: true
+                },
+                league_link: {
+                    required: true
+                },
+            },
+            
+            //display error alert on form submit  
+            invalidHandler: function(event, validator) {             
+            // var alert = $('#kt_form_1_msg');
+            // alert.removeClass('kt-hidden').show();
+            // KTUtil.scrollTo('#price', -200);
+            },
+    
+            submitHandler: function (form) {
+                console.log(form);
+                form[0].submit(); // submit the form
+            }
+        });
     }
 
     return {
@@ -209,5 +242,17 @@ jQuery(document).ready(function() {
         placeholder: "Please select one"
     });
 
-      
 });
+
+function editLeague( league_data ){
+    console.log(league_data);
+    $('#formEditLeague input[name="tourID"]').val(league_data.tournament_id);
+    $('#formEditLeague input[name="league_id"]').val(league_data.id);
+    $('#formEditLeague input[name="league_name"]').val(league_data.name);
+    $('#formEditLeague input[name="league_link"]').val(league_data.link);
+
+    $('#formEditLeague select[name="sport_id"]').val(league_data.sport_id);
+
+    $('#leagueEditModal').modal('show');
+
+}

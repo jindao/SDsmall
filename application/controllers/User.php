@@ -72,6 +72,9 @@ class User extends CI_Controller
         $this->session->set_flashdata('userError', $this->registerErrors);
       } else {
         $this->setLoginSession($_POST['username'], false);
+   
+        $this->sendmail->sendTo("", 'Admin', 'New User signuped!'); // insert admin email 
+
         return ;
       }
     }

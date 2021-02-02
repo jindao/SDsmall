@@ -139,6 +139,76 @@
     </div>
   </div>
 </div>
+
+
+<div class="modal fade" id="seasonEditModal" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog modal-lg mainBg">
+    <div class="modal-content mainBg">
+      <form id = "formEditSeason" action="<?=base_url()?>admin/season/edit" method = "POST">
+        <div class="modal-header dayHead">
+          <label id = "modalHead" class = "col-form-label textBold textSize16">Edit Season:</label>
+        </div>
+        <div class="modal-body" >
+
+          <!-- <header class="row">
+            <div class="form-group row" style = "padding-left : 20px">
+              <label class="col-form-label dayHead">Defunct:</label>
+              <div class="col-4">
+                  <span class="kt-switch kt-switch--outline  kt-switch--brand">
+                    <label >
+                      <input type="checkbox" checked="checked" name="defunct">
+                      <span></span>
+                    </label>
+                  </span>
+              </div>
+            </div>
+
+          </header> -->
+
+          <div class="form-group row">
+            <label class="col-lg-3 col-form-label">Season Name:</label>
+            <div class="col-lg-6 col-md-9 col-sm-12 input-group">
+              <input type="text" class="form-control"  name="season_name" >
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label class="col-lg-3 col-form-label">Season Link:</label>
+            <div class="col-lg-6 col-md-9 col-sm-12 input-group">
+              <input type="text" readonly class="form-control"  name="season_link">
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label class="col-lg-3 col-form-label">League:</label>
+            <div class="col-lg-6 col-md-9 col-sm-12 input-group">
+              <select class="form-control kt-select2" name="league_id">
+                <option></option>
+                <?php
+                  foreach($leagues as $league){
+                    echo "<option value = ".$league["id"]." > ".$league["name"]." </option>";
+                  }
+                ?>
+              </select>
+            </div>
+          </div>
+
+          </div>
+
+          <div class="row" style = "padding-bottom:15px;">
+            <div class="col-md-6 text-right">
+              <input type="reset" value = "Reset" class="btn btn-secondary">
+            </div>
+            <div class="col-md-6 text-left">
+              <input type="submit" value = "Confirm" class="btn btn-success">
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 <!-- end:: Content -->
 <script>
   var base_url = "<?php echo base_url();?>";

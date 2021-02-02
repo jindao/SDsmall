@@ -1,12 +1,12 @@
 'use strict';
 // Class definition
-KTDatatableInvoice
+var datatable;
 var KTDatatableInvoice = function() {
     // Private functions
-
+    var validator;
     var demo = function() {
 
-        var datatable = $('.kt-datatable').KTDatatable({
+        datatable = $('.kt-datatable').KTDatatable({
             // datasource definition
             data: {
                 type: 'remote',
@@ -15,12 +15,11 @@ var KTDatatableInvoice = function() {
                 source: {
 
                     read: {
-                        url: '/SDmall/invoice.php',
+                        url: base_url+"invoice/ajaxList",
                         map: function(raw) {
 
                             var dataSet = raw;
                             if (typeof raw.data !== 'undefined') {
-
                                 dataSet = raw.data;
                             }
                             return dataSet;
@@ -28,10 +27,10 @@ var KTDatatableInvoice = function() {
                     },
 
                 },
-                pageSize: 10, // display 20 records per page
-                serverPaging: false,
-                serverFiltering: true,
-                serverSorting: true,
+                pageSize: 1, // display 20 records per page
+               // serverPaging: false,
+               // serverFiltering: true,
+               // serverSorting: true,
             },
 
             // layout definition
@@ -83,22 +82,16 @@ var KTDatatableInvoice = function() {
                             span.removeClass('la-star');
                             span.addClass('la-star-o');
                         }
-
-
                     });
                 }
             },
 
             // column sorting
             sortable: true,
-
-            pagination: false,
-
-
-
+            pagination: true,
             // columns definition
             columns: [{
-                field: 'RecordID',
+                field: 'id',
                 title: '#',
                 sortable: false,
                 width: 20,
@@ -106,50 +99,118 @@ var KTDatatableInvoice = function() {
                     class: 'kt-checkbox--solid '
                 },
                 textAlign: 'center',
+
+                
             }, {
                     field: 'invoice',
-                    title: `Invoice<i class = "flaticon2-sort"></i>`,
+                    title: `Invoice`,
 
                 }, {
                     field: 'amount',
-                    title: `Amount<i class = "flaticon2-sort"></i>`,
+                    title: `Amount`,
 
                 }, {
                     field: 'issued',
-                    title: `Issued<i class = "flaticon2-sort"></i>`,
+                    title: `Issued`,
+                }, 
 
-                }, {
+                {
                     field: 'due',
-                    title: `Due<i class = "flaticon2-sort"></i>`,
-
-
-                }, {
+                    title: `Due`,
+                },
+                
+                {
                     field: 'status',
-                    title: `Status<i class = "flaticon2-sort"></i>`,
-                    template: function() {
-                        return '<span class="text-green">Paid </span>';
+                    title: `Status`,
+                    template: function(data) {
+                        if(data.status == 1)
+                        {
+                            return '<span class="text-green">Paid </span>';
+                        } else {
+                            return '<span class=""> Not Paid </span>';
+                        }
                     },
-                }, {
-                    field: 'asd',
-                    title: 'PDF ',
+                }, 
+                {
+                    field: 'pdf',
+                    title: 'PDF',
                     sortable: false,
                     width: 110,
                     autoHide: false,
-                    template: function() {
-                        return '<a href = "#"><span class="viewsample">View </span></a>';
-                    },
-                }],
+                    // template: function(data) {
+                    //     return '<a target="_blank" href = "'+base_url+'invoice/generateInvoicePdf/'+data.id+'" ><span class="viewsample">View </span></a>';
+                    // },
+                    locked: {right: 'xl'}
+                },
+                
+            ],
         });
+
+        datatable.on(
+            'kt-datatable--on-check kt-datatable--on-uncheck kt-datatable--on-layout-updated',
+            function(e) {
+                var checkedNodes = datatable.rows('.kt-datatable__row--active').nodes();
+                var count = checkedNodes.length;
+            });
+
+        $('#kt_modal_fetch_id').on('click', function(e) {
+                var ids = datatable.rows('.kt-datatable__row--active').
+                nodes().
+                find('.kt-checkbox--single > [type="checkbox"]').
+                map(function(i, chk) {
+                    return $(chk).val();
+                });
+                var c = document.createDocumentFragment();
+                for (var i = 0; i < ids.length; i++) {
+                    var li = document.createElement('li');
+                    li.setAttribute('data-id', ids[i]);
+                    li.innerHTML = 'Selected record ID: ' + ids[i];
+                    c.appendChild(li);
+                }
+                $(e.target).find('.kt-datatable_selected_ids').append(c);
+            });
 
     };
 
+    var initValidation = function () {
+        validator =   $( "#downloadInvoiceForm" ).validate({
+            // define validation rules
+            rules: {
+            },
+          
+            //display error alert on form submit  
+            invalidHandler: function(event, validator) {             
+            },
+
+            submitHandler: function (form) {
+              // // submit the form
+              var records = [];
+              datatable.rows('.kt-datatable__row--active').
+                nodes().
+                find('.kt-checkbox--single > [type="checkbox"]').
+                map(function(i, chk) {
+                    records.push($(chk).val());
+                });
+                ;
+            console.log(records);
+
+            if(records.length) {
+                var form$ = $("#downloadInvoiceForm");
+                form$.append("<input type='hidden' name='order_ids' value='" + JSON.stringify(records) + "' />");
+                $( "#downloadInvoiceForm" ).get(0).submit();
+            }
+
+          }
+        });   
+
+    }
 
     return {
         // Public functions
         init: function() {
             // init dmeo
             demo();
-
+            initValidation();
         },
 
     };

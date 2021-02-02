@@ -121,22 +121,22 @@ var SEASONTABLE = function() {
                 field: 'league_name',
                 title: `LEAGUE NAME`,
             }, 
-            /*
+            
             {
-                field: '',
+                field: 'action',
                 title: 'ACTION',
                 sortable: false,
                 width: 110,
                 autoHide: false,
-                template: function() {
-                    return `
+                // template: function() {
+                //     return `
                       
-                        <a href="#" class = "dayHead editTable kt-menu__link"><i class="la la-edit la-2x"></i>  </a>
+                //         <a href="#" class = "dayHead editTable kt-menu__link"><i class="la la-edit la-2x"></i>  </a>
                       
-                      `;
-                },
+                //       `;
+                // },
             }
-            */
+           
         ],
         });
 
@@ -144,6 +144,33 @@ var SEASONTABLE = function() {
 
     var validateFunc = function(){
         validator = $( "#formCreateSeason" ).validate({
+            // define validation rules
+            rules: {
+                season_name: {
+                    required: true
+                },
+                season_link: {
+                    required: true
+                },
+                league_id: {
+                    required: true
+                },
+            },
+            
+            //display error alert on form submit  
+            invalidHandler: function(event, validator) {             
+            // var alert = $('#kt_form_1_msg');
+            // alert.removeClass('kt-hidden').show();
+            // KTUtil.scrollTo('#price', -200);
+            },
+    
+            submitHandler: function (form) {
+                console.log(form);
+                form[0].submit(); // submit the form
+            }
+        });  
+
+        $( "#formEditSeason" ).validate({
             // define validation rules
             rules: {
                 season_name: {
@@ -197,3 +224,15 @@ jQuery(document).ready(function() {
 
       
 });
+
+
+
+function editSeason( season_data ){
+    console.log(season_data);
+    $('#formEditSeason input[name="season_name"]').val(season_data.name);
+    $('#formEditSeason input[name="season_link"]').val(season_data.link);
+    $('#formEditSeason select[name="league_id"]').val(season_data.league_id);
+
+    $('#seasonEditModal').modal('show');
+
+}

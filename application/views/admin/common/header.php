@@ -58,10 +58,18 @@
                       </button>
                     </div>
                     <div class="user-account dropdown-menu dropdown-menu-fit dropdown-menu-right dropdown-menu-anim dropdown-menu-sm-right">
+                      <?php 
+                        $CI =& get_instance();
+                        if( $CI->session->userdata["logged_data"]['role_id'] == 1 ) 
+                        {
+                          echo '<a href="'.base_url().'admin" class="dropdown-item">Admin</a>';
+                        }
+                      
+                      ?>
                       <a href="<?=base_url()?>myaccount/favourite" class="dropdown-item">My Favourites</a>
                       <a href="<?=base_url()?>myaccount/download" class="dropdown-item">My Downloads</a>
                       <a href="<?=base_url()?>myaccount/accountinfo" class="dropdown-item">Account Information</a>
-                      <a href="<?=base_url()?>myaccount/bill" class="dropdown-item">Billing Information</a>
+                      <a href="<?=base_url()?>myaccount/invoice" class="dropdown-item">Billing Information</a>
                       <a href="<?=base_url()?>myaccount/accountaccess" class="dropdown-item">Hellp / Support</a>
 
                     </div>

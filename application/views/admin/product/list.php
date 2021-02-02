@@ -32,6 +32,14 @@
   <div class="kt-portlet__head-toolbar">
     <div class="kt-portlet__head-wrapper">
       <div class="kt-portlet__head-actions">
+
+        <a href = "#" class = "kt-menu__link">
+        <a class="btn btn-add btn-md" id = "bulkUpdateProduct" href = "<?=base_url()?>admin/product/bulkUpdate">
+          <i class="la flaticon2-reload"></i>
+          Update Current
+        </a>
+        </a>
+
         <a href = "#" class = "kt-menu__link">
         <a class="btn btn-add btn-md" id = "addProduct" href = "<?=base_url()?>admin/product/create">
           <i class="la la-plus"></i>

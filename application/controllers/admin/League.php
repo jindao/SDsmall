@@ -45,6 +45,17 @@ class League extends CI_Controller{
     }
   }
 
+  public function edit(){
+    if (isset($_POST['league_id']) && !empty($_POST['league_id'])) {
+
+      $this->Admin_model->updateLeague($_POST);
+      $this->session->set_flashdata('alert_message', 'Updated a league successfully!');
+      redirect("admin/league/index");
+
+    }
+  }
+
+
   public function ajaxList(){
     $this->db->select('league.*, sport.name as sport_name');
     $this->db->join('sport', 'sport.id = league.sport_id', 'left');
@@ -59,7 +70,8 @@ class League extends CI_Controller{
             "sport_name" => $rows->sport_name,
             "tournament_id"=> $rows->tournament_id,
             "name"=> $rows->name,
-            "link"=>$rows->link 
+            "link"=>$rows->link,
+            "action" => '<a href="#" onclick=\'editLeague('.json_encode($rows).'); return false;\' data-id="'.$rows->id.'" class = "dayHead editTable kt-menu__link"><i class="la la-edit la-2x"></i>  </a>', 
         );     
     }
     $output = array(

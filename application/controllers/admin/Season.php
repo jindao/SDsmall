@@ -39,6 +39,16 @@ class Season extends CI_Controller{
     }
   }
 
+  public function edit(){
+    if (isset($_POST['season_link']) && !empty($_POST['season_link'])) {
+
+      $this->Admin_model->updateSeason($_POST);
+      $this->session->set_flashdata('alert_message', 'Updated a season successfully!');
+      redirect("admin/season/index");
+
+    }
+  }
+
   public function ajaxList(){
     $this->db->select('season.*, league.name as league_name');
     $this->db->join('league', 'league.id = season.league_id', 'left');
@@ -50,6 +60,7 @@ class Season extends CI_Controller{
             "season_name"=> $rows->name,
             "season_link" => $rows->link,
             "league_name"=> $rows->league_name,
+            "action" => '<a href="#" onclick=\'editSeason('.json_encode($rows).'); return false;\' class = "dayHead editTable kt-menu__link"><i class="la la-edit la-2x"></i>  </a>', 
         );     
     }
     $output = array(

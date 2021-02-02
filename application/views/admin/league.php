@@ -79,8 +79,6 @@
         <div class="modal-header dayHead">
           <label id = "modalHead" class = "col-form-label textBold textSize16">Add League:</label>
             <input type = "text" id = "runId" name = "runId" value = "" style ="border : none">
-
-
         </div>
         <div class="modal-body" >
 
@@ -162,6 +160,115 @@
                 </div>
                 <div class="kt-form__control">
                   <input class="form-control" placeholder=""  type="text" id="league_link" name="league_link" value = "">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <footer class="row">
+            <div class="col-md-6 text-right">
+              <input type="reset" value = "Reset" class="btn btn-secondary">
+            </div>
+            <div class="col-md-6 text-left">
+              <input type="submit" value = "Confirm" class="btn btn-success">
+            </div>
+          </footer>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+
+<div class="modal fade" id="leagueEditModal" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog modal-lg mainBg">
+    <div class="modal-content mainBg">
+      <form id = "formEditLeague" action="<?=base_url()?>admin/league/edit" method = "POST">
+        <div class="modal-header dayHead">
+          <label id = "modalHead" class = "col-form-label textBold textSize16">Edit League:</label>
+            <input type = "text"  name = "leagueID" value = "" style ="border : none">
+        </div>
+        <div class="modal-body" >
+
+          <!-- <header class="row">
+            <div class="form-group row" style = "padding-left : 20px">
+              <label class="col-form-label dayHead">Defunct:</label>
+              <div class="col-4">
+                  <span class="kt-switch kt-switch--outline  kt-switch--brand">
+                    <label >
+                      <input type="checkbox" checked="checked" name="defunct">
+                      <span></span>
+                    </label>
+                  </span>
+              </div>
+            </div>
+
+          </header> -->
+          <div class = "form-group row">
+            <div class="col-md-4 kt-form kt-form--label-right kt-margin-t-20 kt-margin-b-10">
+              <div class="kt-form__group kt-form__group--inline">
+                <div class="kt-form__label">
+                  <label class = "dayHead">ID:</label>
+                </div>
+                <div class="kt-form__control">
+                  <input class="form-control" readonly type="text" placeholder=""  name="league_id" >
+                </div>
+              </div>
+             </div>
+            
+              <div class="col-md-4 kt-form kt-form--label-right kt-margin-t-20 kt-margin-b-10">
+
+                <div class="kt-form__group kt-form__group--inline">
+                  <div class="kt-form__label">
+                    <label class = "dayHead">SPORTID:</label>
+                  </div>
+                  <div class="kt-form__control">
+                  <select class="form-control kt-select2"  name="sport_id">
+                    <option></option>
+                    <?php
+                      foreach($sports as $sport){
+                        echo "<option value = ".$sport["id"]." > ".$sport["name"]." </option>";
+                      }
+                    ?>
+                  </select>
+                  </div>
+                </div>
+                </div>
+
+            <div class="col-md-4 kt-form kt-form--label-right kt-margin-t-20 kt-margin-b-10">
+
+              <div class="kt-form__group kt-form__group--inline">
+                <div class="kt-form__label">
+                  <label class = "dayHead">TOURID:</label>
+                </div>
+                <div class="kt-form__control">
+                  <input class="form-control"  type="text" placeholder=""  name="tourID" >
+                </div>
+                </div>
+            </div>
+          </div>
+
+          <div class = "form-group row">
+            <div class="col-md-6 kt-form kt-form--label-right kt-margin-t-20 kt-margin-b-10">
+
+              <div class="kt-form__group kt-form__group--inline">
+                <div class="kt-form__label">
+                    <label class = "dayHead">Name:</label>
+                </div>
+                <div class="kt-form__control">
+                  <input class="form-control" placeholder=""  type="text"  name="league_name" value = "">
+                </div>
+              </div>
+              </div>
+            <div class="col-md-6 kt-form kt-form--label-right kt-margin-t-20 kt-margin-b-10">
+
+              <div class="kt-form__group kt-form__group--inline">
+                <div class="kt-form__label">
+                  <label class = "dayHead">Link:</label>
+                </div>
+                <div class="kt-form__control">
+                  <input class="form-control" placeholder=""  type="text" name="league_link" value = "">
                 </div>
               </div>
             </div>

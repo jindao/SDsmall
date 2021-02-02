@@ -105,7 +105,7 @@ jQuery(document).ready(function() {
                 dataType: "json",
                 success: function(resultData) { 
                     console.log(resultData);
-                    var content = "<option></option>";
+                    var content = "<option></option><option value='0'>--All--</option>";
                     for( var i = 0 ; i < resultData.length ; i++) {
                         content += "<option value = '"+resultData[i].id+"' >" + resultData[i].name + "</option>";    
                     }
@@ -129,7 +129,7 @@ jQuery(document).ready(function() {
                 dataType: "json",
                 success: function(resultData) { 
                     console.log(resultData);
-                    var content = "<option></option>";
+                    var content = "<option></option><option value='0'>--All--</option>";
                     for( var i = 0 ; i < resultData.length ; i++) {
                         var linkSplit = resultData[i].link.split("/"); 
                         var country_name = "";
@@ -149,33 +149,41 @@ jQuery(document).ready(function() {
     });
 
     $('#league_id').on('change', function(e) {
-        if($(this).val() != "" )
-            $.ajax({
-                type: 'POST',
-                url: base_url + "admin/product/ajaxSeasonList",
-                data: {
-                    country_link : $('#country_id').find(":selected").attr('data-name'),
-                    league_id : $('#league_id').val(),
-                },
-                dataType: "json",
-                success: function(resultData) { 
-                    console.log(resultData);
-                    var content = "<option></option>";
-                    for( var i = 0 ; i < resultData.length ; i++) {
-                        var linkSplit = resultData[i].link.split("/"); 
-                        var country_name = "";
-                        if(linkSplit.length > 0)
-                        {
-                            country_name = linkSplit[2];
+        if($(this).val() != "" ){
+            if ($(this).val() == "0") {
+                $('#country_id').attr('disabled',true);
+                $('#season_id').attr('disabled',true);
+                $('#season_from').attr('disabled',true);
+                $('#season_to').attr('disabled',true);
+            } else {
+                $.ajax({
+                    type: 'POST',
+                    url: base_url + "admin/product/ajaxSeasonList",
+                    data: {
+                        country_link : $('#country_id').find(":selected").attr('data-name'),
+                        league_id : $('#league_id').val(),
+                    },
+                    dataType: "json",
+                    success: function(resultData) { 
+                        console.log(resultData);
+                        var content = "<option></option><option value='0'>--All--</option>";
+                        for( var i = 0 ; i < resultData.length ; i++) {
+                            var linkSplit = resultData[i].link.split("/"); 
+                            var country_name = "";
+                            if(linkSplit.length > 0)
+                            {
+                                country_name = linkSplit[2];
+                            }
+                            content += "<option value = '"+resultData[i].link+"' >" + resultData[i].name + "( "+country_name+" )" + "</option>";    
                         }
-                        content += "<option value = '"+resultData[i].link+"' >" + resultData[i].name + "( "+country_name+" )" + "</option>";    
+                        $("#season_id").html(content);
+                        $('#season_id').select2({
+                            placeholder: "Please select one"
+                        });
                     }
-                    $("#season_id").html(content);
-                    $('#season_id').select2({
-                        placeholder: "Please select one"
-                    });
-                }
-            });
+                });
+            }
+        }
     });
 
     $('#season_id').on('change', function(e) {

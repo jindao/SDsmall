@@ -59,7 +59,7 @@
       </div>
       
       <div class="form-group row">
-        <label class="col-form-label col-lg-3 col-sm-12">Competition</label>
+        <label class="col-form-label col-lg-3 col-sm-12">Competition:</label>
         <div class=" col-lg-4 col-md-9 col-sm-12">
           <select class="form-control kt-select2" id="league_id" name="league_id">
             <option></option>

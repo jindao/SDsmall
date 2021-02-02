@@ -87,7 +87,7 @@ class Admin_model extends CI_Model
                     'price' => $post['price'],
                     'file_path' => $post['file_path'],
                     'sample_view' => html_entity_decode($post['sample_view'],ENT_QUOTES),
-                    'last_update' => $post["last_updated"],
+                    'last_update' => $this->getLastUpdate(),
                     'created_at' => date('Y-m-d H:i:s'),
                     'updated_at' => date('Y-m-d H:i:s')
                 ))) {
@@ -185,6 +185,21 @@ class Admin_model extends CI_Model
         return $id;
     }
 
+    public function updateLeague($post){
+        $this->db->where ( "id", $post["league_id"]);
+        if (!$this->db->update('league', array(
+            
+            "name" => $post["league_name"],
+            "link" => $post["league_link"],
+            "sport_id" => $post["sport_id"],
+            "tournament_id" => $post["tourID"],
+        )))
+        {
+            return -1;
+        }
+        return 1;
+    }
+
     public function createSeason($post){
         if (!$this->db->insert('season', array(
             "name" => $post["season_name"],
@@ -197,6 +212,19 @@ class Admin_model extends CI_Model
         $id = $this->db->insert_id();
         return $id;
     }
+
+    public function updateSeason($post){
+        $this->db->where ( "link", $post["season_link"]);
+        if (!$this->db->update('season', array(
+            "name" => $post["season_name"],
+            "league_id" => $post["league_id"],
+        )))
+        {
+            return -1;
+        }
+        return 1;
+    }
+
 
     public function countTotalUsers(){
 
